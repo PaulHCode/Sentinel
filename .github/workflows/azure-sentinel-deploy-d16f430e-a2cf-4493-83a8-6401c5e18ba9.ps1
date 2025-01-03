@@ -446,6 +446,7 @@ function AbsolutePathWithSlash($relativePath) {
 
 #resolve parameter file name, return $null if there is none.
 function GetParameterFile($path) {
+    Write-Output "Checking for parameter files in $path"
     $index = RelativePathWithBackslash $path
     $key = ($global:parameterFileMapping.Keys | Where-Object { $_ -eq $index })
     if ($key) {
