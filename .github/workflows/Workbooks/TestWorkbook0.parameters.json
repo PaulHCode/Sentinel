@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workbookDisplayName": {
+            "value": "Test Workbook 0"
+        },
+        "workbookType": {
+            "value": "sentinel"
+        },
+        "workbookSourceId": {
+            "value": "/subscriptions/4ba9e694-9cdb-4561-8474-0be974895a3e/resourcegroups/logsandsecurity/providers/microsoft.operationalinsights/workspaces/tenantmonitoring"
+        },
+        "workbookId": {
+            "value": "[newGuid()]"
+        }
+    }
+}
