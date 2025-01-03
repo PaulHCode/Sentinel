@@ -516,6 +516,7 @@ function Deployment($fullDeploymentFlag, $remoteShaTable, $tree) {
                 return
             }       
             $parameterFile = GetParameterFile $path
+            Write-Output "Using parameter file: $parameterFile"
             $result = SmartDeployment $fullDeploymentFlag $remoteShaTable $path $parameterFile $templateObject
             if ($result.isSuccess -eq $false) {
                 $totalFailed++
