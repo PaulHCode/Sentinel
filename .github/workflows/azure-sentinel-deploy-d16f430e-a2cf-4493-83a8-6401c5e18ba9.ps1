@@ -597,7 +597,7 @@ function main() {
     git config --global user.name "Sentinel"
 
     if ($CloudEnv -ne 'AzureUSGovernment') {
-        Write-Output "Attempting Sign In to Azure Cloud"
+        Write-Output "Attempting Sign In to Azure Government Cloud"
         ConnectAzCloud
     }
 
