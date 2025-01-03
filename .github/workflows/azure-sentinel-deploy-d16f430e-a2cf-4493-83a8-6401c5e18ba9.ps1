@@ -600,10 +600,13 @@ function main() {
         Write-Output "Attempting Sign In to Azure Government Cloud"
         ConnectAzCloud
     }
-
+    Write-Output "Starting TryGetCsvFile"
     TryGetCsvFile
+    Write-Output "Starting LoadDeploymentConfig"
     LoadDeploymentConfig
+    Write-Output "Starting GetGithubTree"
     $tree = GetGithubTree
+    Write-Output "Starting GetCommitShaTable"
     $remoteShaTable = GetCommitShaTable $tree
 
     $existingConfigSha = $global:localCsvTablefinal[$configPath]
@@ -615,7 +618,9 @@ function main() {
     }
 
     $fullDeploymentFlag = $modifiedConfig -or ($smartDeployment -eq "false")
+    Write-Output "Starting Deployment"
     Deployment $fullDeploymentFlag $remoteShaTable $tree
+    Write-Output "Deployment Completed"
 }
 
 main
