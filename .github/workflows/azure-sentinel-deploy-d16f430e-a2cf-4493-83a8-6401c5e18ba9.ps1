@@ -7,12 +7,12 @@ $Directory = $Env:directory
 $Creds = $Env:creds
 $contentTypes = $Env:contentTypes
 $contentTypeMapping = @{
-    "AnalyticsRule"=@("Microsoft.OperationalInsights/workspaces/providers/alertRules", "Microsoft.OperationalInsights/workspaces/providers/alertRules/actions");
-    "AutomationRule"=@("Microsoft.OperationalInsights/workspaces/providers/automationRules");
-    "HuntingQuery"=@("Microsoft.OperationalInsights/workspaces/savedSearches");
-    "Parser"=@("Microsoft.OperationalInsights/workspaces/savedSearches");
-    "Playbook"=@("Microsoft.Web/connections", "Microsoft.Logic/workflows", "Microsoft.Web/customApis");
-    "Workbook"=@("Microsoft.Insights/workbooks");
+    "AnalyticsRule"  = @("Microsoft.OperationalInsights/workspaces/providers/alertRules", "Microsoft.OperationalInsights/workspaces/providers/alertRules/actions");
+    "AutomationRule" = @("Microsoft.OperationalInsights/workspaces/providers/automationRules");
+    "HuntingQuery"   = @("Microsoft.OperationalInsights/workspaces/savedSearches");
+    "Parser"         = @("Microsoft.OperationalInsights/workspaces/savedSearches");
+    "Playbook"       = @("Microsoft.Web/connections", "Microsoft.Logic/workflows", "Microsoft.Web/customApis");
+    "Workbook"       = @("Microsoft.Insights/workbooks");
 }
 $sourceControlId = $Env:sourceControlId 
 $rootDirectory = $Env:rootDirectory
@@ -32,12 +32,12 @@ $global:excludeContentFiles = @()
 $guidPattern = '(\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b)'
 $namePattern = '([-\w\._\(\)]+)'
 $sentinelResourcePatterns = @{
-    "AnalyticsRule" = "/subscriptions/$guidPattern/resourceGroups/$namePattern/providers/Microsoft.OperationalInsights/workspaces/$namePattern/providers/Microsoft.SecurityInsights/alertRules/$namePattern"
+    "AnalyticsRule"  = "/subscriptions/$guidPattern/resourceGroups/$namePattern/providers/Microsoft.OperationalInsights/workspaces/$namePattern/providers/Microsoft.SecurityInsights/alertRules/$namePattern"
     "AutomationRule" = "/subscriptions/$guidPattern/resourceGroups/$namePattern/providers/Microsoft.OperationalInsights/workspaces/$namePattern/providers/Microsoft.SecurityInsights/automationRules/$namePattern"
-    "HuntingQuery" = "/subscriptions/$guidPattern/resourceGroups/$namePattern/providers/Microsoft.OperationalInsights/workspaces/$namePattern/savedSearches/$namePattern"
-    "Parser" = "/subscriptions/$guidPattern/resourceGroups/$namePattern/providers/Microsoft.OperationalInsights/workspaces/$namePattern/savedSearches/$namePattern"
-    "Playbook" = "/subscriptions/$guidPattern/resourceGroups/$namePattern/providers/Microsoft.Logic/workflows/$namePattern"
-    "Workbook" = "/subscriptions/$guidPattern/resourceGroups/$namePattern/providers/Microsoft.Insights/workbooks/$namePattern"
+    "HuntingQuery"   = "/subscriptions/$guidPattern/resourceGroups/$namePattern/providers/Microsoft.OperationalInsights/workspaces/$namePattern/savedSearches/$namePattern"
+    "Parser"         = "/subscriptions/$guidPattern/resourceGroups/$namePattern/providers/Microsoft.OperationalInsights/workspaces/$namePattern/savedSearches/$namePattern"
+    "Playbook"       = "/subscriptions/$guidPattern/resourceGroups/$namePattern/providers/Microsoft.Logic/workflows/$namePattern"
+    "Workbook"       = "/subscriptions/$guidPattern/resourceGroups/$namePattern/providers/Microsoft.Insights/workbooks/$namePattern"
 }
 
 if ([string]::IsNullOrEmpty($contentTypes)) {
@@ -120,8 +120,7 @@ function GetCommitShaTable($getTreeResponse) {
     $supportedExtensions = @(".json", ".bicep", ".bicepparam");
     $getTreeResponse.tree | ForEach-Object {
         $truePath = AbsolutePathWithSlash $_.path
-        if ((([System.IO.Path]::GetExtension($_.path) -in $supportedExtensions)) -or ($truePath -eq $configPath))
-        {
+        if ((([System.IO.Path]::GetExtension($_.path) -in $supportedExtensions)) -or ($truePath -eq $configPath)) {
             $shaTable.Add($truePath, $_.sha)
         }
     }
@@ -138,7 +137,8 @@ function PushCsvToRepo() {
         git commit --allow-empty -m "Initial commit on orphan branch"
         git push -u origin $newResourceBranch
         New-Item -ItemType "directory" -Path ".sentinel"
-    } else {
+    }
+    else {
         git fetch > $null
         git checkout $newResourceBranch
     }
@@ -152,11 +152,10 @@ function PushCsvToRepo() {
 
 function ReadCsvToTable {
     $csvTable = Import-Csv -Path $csvPath
-    $HashTable=@{}
-    foreach($r in $csvTable)
-    {
+    $HashTable = @{}
+    foreach ($r in $csvTable) {
         $key = AbsolutePathWithSlash $r.FileName 
-        $HashTable[$key]=$r.CommitSha
+        $HashTable[$key] = $r.CommitSha
     }   
     return $HashTable    
 }
@@ -192,7 +191,7 @@ function AttemptAzLogin($psCredential, $tenantId, $cloudEnv) {
     $stopTrying = $false
     do {
         try {
-            Connect-AzAccount -ServicePrincipal -Tenant $tenantId -Credential $psCredential -Environment $cloudEnv | out-null;
+            Connect-AzAccount -ServicePrincipal -Tenant $tenantId -Credential $psCredential -Environment $cloudEnv | Out-Null;
             Write-Host "Login Successful"
             $stopTrying = $true
         }
@@ -217,23 +216,22 @@ function ConnectAzCloud {
     Clear-AzContext -Scope Process;
     Clear-AzContext -Scope CurrentUser -Force -ErrorAction SilentlyContinue;
     
-    if ($CloudEnv -ne 'AzureChinaCloud' -and $CloudEnv -ne 'AzureUSGovernment') 
-    {
+    if ($CloudEnv -ne 'AzureChinaCloud' -and $CloudEnv -ne 'AzureUSGovernment') {
         Write-Output "Attempting Adding new cloud";
 
         Add-AzEnvironment `
-        -Name $CloudEnv `
-        -ActiveDirectoryEndpoint $RawCreds.activeDirectoryEndpointUrl `
-        -ResourceManagerEndpoint $RawCreds.resourceManagerEndpointUrl `
-        -ActiveDirectoryServiceEndpointResourceId $RawCreds.activeDirectoryServiceEndpointResourceId `
-        -GraphEndpoint $RawCreds.graphEndpointUrl | out-null;
+            -Name $CloudEnv `
+            -ActiveDirectoryEndpoint $RawCreds.activeDirectoryEndpointUrl `
+            -ResourceManagerEndpoint $RawCreds.resourceManagerEndpointUrl `
+            -ActiveDirectoryServiceEndpointResourceId $RawCreds.activeDirectoryServiceEndpointResourceId `
+            -GraphEndpoint $RawCreds.graphEndpointUrl | Out-Null;
     }
 
     $servicePrincipalKey = ConvertTo-SecureString $RawCreds.clientSecret.replace("'", "''") -AsPlainText -Force
     $psCredential = New-Object System.Management.Automation.PSCredential($RawCreds.clientId, $servicePrincipalKey)
 
     AttemptAzLogin $psCredential $RawCreds.tenantId $CloudEnv
-    Set-AzContext -Tenant $RawCreds.tenantId | out-null;
+    Set-AzContext -Tenant $RawCreds.tenantId | Out-Null;
 }
 
 function AttemptDeployMetadata($deploymentName, $resourceGroupName, $templateObject) {
@@ -274,13 +272,13 @@ function GetContentKinds($resource) {
 
 function ToContentKind($contentKinds, $resource, $templateObject) {
     if ($contentKinds.Count -eq 1) {
-       return $contentKinds 
+        return $contentKinds 
     }
     if ($null -ne $resource -and $resource.Contains('savedSearches')) {
-       if ($templateObject.resources.properties.Category -eq "Hunting Queries") {
-           return "HuntingQuery"
-       }
-       return "Parser"
+        if ($templateObject.resources.properties.Category -eq "Hunting Queries") {
+            return "HuntingQuery"
+        }
+        return "Parser"
     }
     return $null
 }
@@ -298,7 +296,8 @@ function IsValidTemplate($path, $templateObject, $parameterFile) {
         else {
             if ($parameterFile) {
                 Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $path -TemplateParameterFile $parameterFile
-            } else {
+            }
+            else {
                 Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $path
             }
         }
@@ -312,7 +311,7 @@ function IsValidTemplate($path, $templateObject, $parameterFile) {
 }
 
 function IsRetryable($deploymentName) {
-    $retryableStatusCodes = "Conflict","TooManyRequests","InternalServerError","DeploymentActive"
+    $retryableStatusCodes = "Conflict", "TooManyRequests", "InternalServerError", "DeploymentActive"
     Try {
         $deploymentResult = Get-AzResourceGroupDeploymentOperation -DeploymentName $deploymentName -ResourceGroupName $ResourceGroupName -ErrorAction Stop
         return $retryableStatusCodes -contains $deploymentResult.StatusCode
@@ -349,29 +348,23 @@ function AttemptDeployment($path, $parameterFile, $deploymentName, $templateObje
     }
     $isSuccess = $false
     $currentAttempt = 0
-    While (($currentAttempt -lt $MaxRetries) -and (-not $isSuccess)) 
-    {
+    While (($currentAttempt -lt $MaxRetries) -and (-not $isSuccess)) {
         $currentAttempt ++
-        Try 
-        {
+        Try {
             Write-Host "[Info] Deploy $path with parameter file: [$parameterFile]"
-            if (DoesContainWorkspaceParam $templateObject) 
-            {
+            if (DoesContainWorkspaceParam $templateObject) {
                 if ($parameterFile) {
                     New-AzResourceGroupDeployment -Name $deploymentName -ResourceGroupName $ResourceGroupName -TemplateFile $path -workspace $workspaceName -TemplateParameterFile $parameterFile -ErrorAction Stop | Out-Host
                 }
-                else 
-                {
+                else {
                     New-AzResourceGroupDeployment -Name $deploymentName -ResourceGroupName $ResourceGroupName -TemplateFile $path -workspace $workspaceName -ErrorAction Stop | Out-Host
                 }
             }
-            else 
-            {
+            else {
                 if ($parameterFile) {
                     New-AzResourceGroupDeployment -Name $deploymentName -ResourceGroupName $ResourceGroupName -TemplateFile $path -TemplateParameterFile $parameterFile -ErrorAction Stop | Out-Host
                 }
-                else 
-                {
+                else {
                     New-AzResourceGroupDeployment -Name $deploymentName -ResourceGroupName $ResourceGroupName -TemplateFile $path -ErrorAction Stop | Out-Host
                 }
             }
@@ -379,23 +372,18 @@ function AttemptDeployment($path, $parameterFile, $deploymentName, $templateObje
 
             $isSuccess = $true
         }
-        Catch [Exception] 
-        {
+        Catch [Exception] {
             $err = $_
-            if (-not (IsRetryable $deploymentName)) 
-            {
+            if (-not (IsRetryable $deploymentName)) {
                 Write-Host "[Warning] Failed to deploy $path with error: $err"
                 break
             }
-            else 
-            {
-                if ($currentAttempt -le $MaxRetries) 
-                {
+            else {
+                if ($currentAttempt -le $MaxRetries) {
                     Write-Host "[Warning] Failed to deploy $path with error: $err. Retrying in $secondsBetweenAttempts seconds..."
                     Start-Sleep -Seconds $secondsBetweenAttempts
                 }
-                else
-                {
+                else {
                     Write-Host "[Warning] Failed to deploy $path after $currentAttempt attempts with error: $err"
                 }
             }
@@ -420,11 +408,11 @@ function LoadDeploymentConfig() {
             $deployment_config = Get-Content $configPath | Out-String | ConvertFrom-Json
             $parameterFileMappings = @{}
             if ($deployment_config.parameterfilemappings) {
-                $deployment_config.parameterfilemappings.psobject.properties | ForEach { $parameterFileMappings[$_.Name] = $_.Value }
+                $deployment_config.parameterfilemappings.psobject.properties | ForEach-Object { $parameterFileMappings[$_.Name] = $_.Value }
             }
-            $key = ($parameterFileMappings.Keys | ? { $_ -eq $workspaceId })
+            $key = ($parameterFileMappings.Keys | Where-Object { $_ -eq $workspaceId })
             if ($null -ne $key) {
-                $parameterFileMappings[$key].psobject.properties | ForEach { $global:parameterFileMapping[$_.Name] = $_.Value }
+                $parameterFileMappings[$key].psobject.properties | ForEach-Object { $global:parameterFileMapping[$_.Name] = $_.Value }
             }
             if ($deployment_config.prioritizedcontentfiles) {
                 $global:prioritizedContentFiles = $deployment_config.prioritizedcontentfiles
@@ -444,16 +432,16 @@ function LoadDeploymentConfig() {
 }
 
 function filterContentFile($fullPath) {
-	$temp = RelativePathWithBackslash $fullPath
-	return $global:excludeContentFiles | Where-Object {$temp.StartsWith($_, 'CurrentCultureIgnoreCase')}
+    $temp = RelativePathWithBackslash $fullPath
+    return $global:excludeContentFiles | Where-Object { $temp.StartsWith($_, 'CurrentCultureIgnoreCase') }
 }
 
 function RelativePathWithBackslash($absolutePath) {
-	return $absolutePath.Replace($rootDirectory + "\", "").Replace("\", "/")
+    return $absolutePath.Replace($rootDirectory + "\", "").Replace("\", "/")
 }
 
 function AbsolutePathWithSlash($relativePath) {
-	return Join-Path -Path $rootDirectory -ChildPath $relativePath
+    return Join-Path -Path $rootDirectory -ChildPath $relativePath
 }
 
 #resolve parameter file name, return $null if there is none.
@@ -471,10 +459,12 @@ function GetParameterFile($path) {
     $parameterFilePrefix = if ($extension -eq ".json") {
         $extension = ".parameters.json"
         $path.TrimEnd(".json")
-    } elseif ($extension -eq ".bicep") {
+    }
+    elseif ($extension -eq ".bicep") {
         $extension = ".bicepparam"
         $path.TrimEnd(".bicep")
-    } else {
+    }
+    else {
         return $null
     }
     
@@ -496,16 +486,15 @@ function GetParameterFile($path) {
 
 function Deployment($fullDeploymentFlag, $remoteShaTable, $tree) {
     Write-Host "Starting Deployment for Files in path: $Directory"
-    if (Test-Path -Path $Directory) 
-    {
+    if (Test-Path -Path $Directory) {
         $totalFiles = 0;
         $totalFailed = 0;
-	      $iterationList = @()
-        $global:prioritizedContentFiles | ForEach-Object  { $iterationList += (AbsolutePathWithSlash $_) }
-        Get-ChildItem -Path $Directory -Recurse -Include *.bicep, *.json -exclude *metadata.json, *.parameters*.json, *.bicepparam, bicepconfig.json |
-                        Where-Object { $null -eq ( filterContentFile $_.FullName ) } |
-                        Select-Object -Property FullName |
-                        ForEach-Object { $iterationList += $_.FullName }
+        $iterationList = @()
+        $global:prioritizedContentFiles | ForEach-Object { $iterationList += (AbsolutePathWithSlash $_) }
+        Get-ChildItem -Path $Directory -Recurse -Include *.bicep, *.json -Exclude *metadata.json, *.parameters*.json, *.bicepparam, bicepconfig.json |
+            Where-Object { $null -eq ( filterContentFile $_.FullName ) } |
+            Select-Object -Property FullName |
+            ForEach-Object { $iterationList += $_.FullName }
         $iterationList | ForEach-Object {
             $path = $_
             Write-Host "[Info] Try to deploy $path"
@@ -516,12 +505,12 @@ function Deployment($fullDeploymentFlag, $remoteShaTable, $tree) {
             
             if ($path -like "*.bicep") {
                 $templateObject = bicep build $path --stdout | Out-String | ConvertFrom-Json
-            } else {
+            }
+            else {
                 $templateObject = Get-Content $path | Out-String | ConvertFrom-Json
             }
 
-            if (-not (IsValidResourceType $templateObject))
-            {
+            if (-not (IsValidResourceType $templateObject)) {
                 Write-Host "[Warning] Skipping deployment for $path. The file contains resources for content that was not selected for deployment. Please add content type to connection if you want this file to be deployed."
                 return
             }       
@@ -541,14 +530,12 @@ function Deployment($fullDeploymentFlag, $remoteShaTable, $tree) {
             }
         }
         PushCsvToRepo
-        if ($totalFiles -gt 0 -and $totalFailed -gt 0) 
-        {
+        if ($totalFiles -gt 0 -and $totalFailed -gt 0) {
             $err = "$totalFailed of $totalFiles deployments failed."
             Throw $err
         }
     }
-    else 
-    {
+    else {
         Write-Output "[Warning] $Directory not found. nothing to deploy"
     }
 }
@@ -572,7 +559,7 @@ function SmartDeployment($fullDeploymentFlag, $remoteShaTable, $path, $parameter
             $isSuccess = AttemptDeployment $path $parameterFile $deploymentName $templateObject    
         }
         return @{
-            skip = $skip
+            skip      = $skip
             isSuccess = $isSuccess
         }
     }
@@ -609,8 +596,7 @@ function main() {
     git config --global user.email "donotreply@microsoft.com"
     git config --global user.name "Sentinel"
 
-    if ($CloudEnv -ne 'AzureCloud') 
-    {
+    if ($CloudEnv -ne 'AzureUSGovernment') {
         Write-Output "Attempting Sign In to Azure Cloud"
         ConnectAzCloud
     }
