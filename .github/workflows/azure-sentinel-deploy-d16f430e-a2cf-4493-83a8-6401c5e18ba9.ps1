@@ -285,6 +285,7 @@ function ToContentKind($contentKinds, $resource, $templateObject) {
 
 function IsValidTemplate($path, $templateObject, $parameterFile) {
     Write-Host "[Info] Validating template...: Path: $path TemplateObject: $templateObject ParameterFile: $parameterFile"
+    Write-Host "[Info] Checking if the file is valid..."
     Try {
         if (DoesContainWorkspaceParam $templateObject) {
             Write-Host "[Info] Does contain workspace parameter: $true"
