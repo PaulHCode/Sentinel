@@ -1,0 +1,28 @@
+{
+    "version": "Notebook/1.0",
+    "items": [
+        {
+            "type": 1,
+            "content": {
+                "json": "## New workbook\n---\n\nWelcome to your new workbook.  This area will display text formatted as markdown.\n\n\nWe've included a basic analytics query to get you started. Use the `Edit` button below each section to configure it or add more sections."
+            },
+            "name": "text - 2"
+        },
+        {
+            "type": 3,
+            "content": {
+                "version": "KqlItem/1.0",
+                "query": "union withsource=_TableName *\n| summarize Count=count() by _TableName\n| render barchart",
+                "size": 1,
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "query - 2"
+        }
+    ],
+    "fallbackResourceIds": [
+        "/subscriptions/4ba9e694-9cdb-4561-8474-0be974895a3e/resourcegroups/logsandsecurity/providers/microsoft.operationalinsights/workspaces/tenantmonitoring"
+    ],
+    "fromTemplateId": "sentinel-UserWorkbook",
+    "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
