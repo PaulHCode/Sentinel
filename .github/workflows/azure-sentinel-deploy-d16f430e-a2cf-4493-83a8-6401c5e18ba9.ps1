@@ -284,20 +284,27 @@ function ToContentKind($contentKinds, $resource, $templateObject) {
 }
 
 function IsValidTemplate($path, $templateObject, $parameterFile) {
+    Write-Host "[Info] Validating template...: Path: $path TemplateObject: $templateObject ParameterFile: $parameterFile"
     Try {
         if (DoesContainWorkspaceParam $templateObject) {
+            Write-Host "[Info] Does contain workspace parameter: $true"
             if ($parameterFile) {
+                Write-Host "[Info] Parameter file: $parameterFile"
                 Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $path -TemplateParameterFile $parameterFile -workspace $WorkspaceName
             }
             else {
+                Write-Host "[Info] Does not contain parameter file"
                 Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $path -workspace $WorkspaceName
             }
         }
         else {
+            Write-Host "[Info] Does contain workspace parameter: $false"
             if ($parameterFile) {
+                Write-Host "[Info] Parameter file: $parameterFile"
                 Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $path -TemplateParameterFile $parameterFile
             }
             else {
+                Write-Host "[Info] Does not contain parameter file"
                 Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $path
             }
         }
@@ -343,12 +350,15 @@ function AttemptDeployment($path, $parameterFile, $deploymentName, $templateObje
     Write-Host "[Info] Deploying $path with deployment name $deploymentName"
     #
     $isValid = IsValidTemplate $path $templateObject $parameterFile
+    Write-Host "[Info] Template is valid: $isValid"
+    Write-Host "[Info] Max Retries: $MaxRetries"
     if (-not $isValid) {
         return $false
     }
     $isSuccess = $false
     $currentAttempt = 0
     While (($currentAttempt -lt $MaxRetries) -and (-not $isSuccess)) {
+        Write-Host "[Info] Attempt $currentAttempt"
         $currentAttempt ++
         Try {
             Write-Host "[Info] Deploy $path with parameter file: [$parameterFile]"
