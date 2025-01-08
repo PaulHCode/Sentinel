@@ -302,6 +302,7 @@ function IsValidTemplate($path, $templateObject, $parameterFile) {
             Write-Host "[Info] Does contain workspace parameter: $false"
             if ($parameterFile) {
                 Write-Host "[Info] Parameter file: $parameterFile"
+                Write-Host "[Info] `ParameterFile object type is: $($parameterFile.GetType().FullName)"
                 Test-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile $path -TemplateParameterFile $parameterFile
             }
             else {
